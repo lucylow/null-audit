@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { supabase } from './integrations/supabase/client'
+import { supabase } from './lib/supabaseClient'
 import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { Toaster } from 'sonner'
 import Auth from './pages/Auth'
