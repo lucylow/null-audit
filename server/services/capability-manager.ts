@@ -111,7 +111,7 @@ export class CapabilityManager {
   cleanup(): void {
     const now = Math.floor(Date.now() / 1000);
     
-    for (const [tokenString, token] of this.tokenCache.entries()) {
+    for (const [tokenString, token] of Array.from(this.tokenCache.entries())) {
       if (token.exp < now) {
         this.tokenCache.delete(tokenString);
       }

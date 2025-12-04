@@ -148,7 +148,7 @@ export class HITLManager {
   getPendingTasks(limit = 50): HumanTask[] {
     const pending: HumanTask[] = [];
     
-    for (const task of this.tasks.values()) {
+    for (const task of Array.from(this.tasks.values())) {
       if (task.status === 'pending') {
         pending.push(task);
         if (pending.length >= limit) break;
