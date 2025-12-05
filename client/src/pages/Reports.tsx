@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileText, Download, Search, Filter, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, BarChart3 } from "lucide-react";
+import { FileText, Download, Search, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, BarChart3 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { showSuccessNotification, showErrorNotification, apiClient } from "@/lib/error-handler";
 import {
@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface Report {
   id: string;
@@ -80,15 +80,7 @@ export default function Reports() {
     setFilteredReports(filtered);
   }, [reports, searchTerm, statusFilter]);
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  useEffect(() => {
-    filterReports();
-  }, [filterReports]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       const data = await apiClient.get<Report[]>('/api/reports');
@@ -99,7 +91,15 @@ export default function Reports() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  useEffect(() => {
+    filterReports();
+  }, [filterReports]);
 
   const toggleRow = (reportId: string) => {
     const newExpanded = new Set(expandedRows);
@@ -191,10 +191,13 @@ export default function Reports() {
     value: count,
   }));
 
-  const COLORS = {
-    PASSED: '#00FF41',
-    WARNING: '#FFFF00',
-    FAILED: '#FF003C',
+  const getStatusColor = (status: string): string => {
+    const colorMap: Record<string, string> = {
+      PASSED: '#00FF41',
+      WARNING: '#FFFF00',
+      FAILED: '#FF003C',
+    };
+    return colorMap[status] || '#888';
   };
 
   return (
@@ -286,7 +289,7 @@ export default function Reports() {
                     dataKey="value"
                   >
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[entry.name as keyof typeof COLORS] || '#888'} />
+                      <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
                     ))}
                   </Pie>
                   <Tooltip />
